@@ -9,7 +9,7 @@ urlpatterns = [
     path("order-summary/", views.OrderSummaryView.as_view(), name="order-summary"),
     path("checkout/", views.CheckoutView.as_view(), name="checkout"),
     path("payment/<payment_option>", views.PaymentView.as_view(), name="payment"),
-    path("request-refund/", views.RequestRefundView.as_view(), name="request-refund"),    
+    path("request-refund/", views.RequestRefundView.as_view(), name="request-refund"),
     path("products/", views.products, name="products"),
     path("add-to-cart/<slug>", views.add_to_cart, name="add-to-cart"),
     path("add-coupon/", views.AddCouponView.as_view(), name="add-coupon"),
@@ -18,5 +18,6 @@ urlpatterns = [
     path("account-login/", views.custom_login, name="account_login"),
     path("account-logout/", views.logout, name="account_logout"),
     path("account-signup/", views.signup, name="account_signup"),
+# path("accounts/", include("allauth.urls")),
     path("logout/", views.custom_logout, name="logout"),
 ]

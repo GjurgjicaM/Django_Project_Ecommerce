@@ -40,9 +40,10 @@ class CheckoutView(View):
         try:
             order = Order.objects.get(user=self.request.user, ordered=False)
             form = CheckoutForm()
+            coupon_form = CouponForm()
             context = {
                 "form": form,
-                'couponform': CouponForm,
+                "coupon_form": coupon_form,
                 "order": order,
                 "DISPLAY_COUPON_FORM": True
             }
@@ -66,8 +67,7 @@ class CheckoutView(View):
             return render(self.request, "checkout.html", context)
 
         except ObjectDoesNotExist:
-            messages.info(self.request, "You don't have an active order")
-            return redirect("core:checkout")
+             return redirect("core:checkout")
 
     def post(self, *args, **kwargs):
         form = CheckoutForm(self.request.POST or None)
@@ -372,7 +372,6 @@ def remove_all_from_cart(request, slug):
 
     if order_qs.exists():
         order = order_qs[0]
-        # Check if the item is in the order
         if order.items.filter(item__slug=item.slug).exists():
             order_item = OrderItem.objects.filter(
                 item=item,
@@ -416,7 +415,6 @@ def logout(request):
 
 def custom_logout(request):
     if request.user.is_authenticated:
-        # Order.objects.filter(user=request.user).delete()
         auth_logout(request)
         messages.info(request, 'You have been logged out.')
     return redirect('/')
