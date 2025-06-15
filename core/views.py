@@ -542,3 +542,16 @@ class RequestRefundView(View):
             except ObjectDoesNotExist:
                 messages.info(self.request, "This order does not exist")
                 return redirect("core:request-refund")
+
+
+class OrderHistoryView(LoginRequiredMixin, ListView):
+    model = Order
+    template_name = "order_history.html"
+    context_object_name = "orders"
+    ordering = ['-ordered_date'] # Order by most recent first
+    paginate_by = 5 # Adjust as needed
+
+    def get_queryset(self):
+        # Only show orders that are actually "ordered" (completed) for the current user
+        return Order.objects.filter(user=self.request.user, ordered=True)
+

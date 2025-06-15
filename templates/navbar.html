@@ -16,7 +16,11 @@
       <li class="nav-item">
         <a class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md transition duration-200" href="{% url 'core:checkout' %}">Checkout</a>
       </li>
-      {% endif %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'core:order-history' %}">Order History</a> {# New link #}
+        </li>
+          <li></li>
+        {% endif %}
     </ul>
 
     {# Mobile Toggler Button #}
