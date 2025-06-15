@@ -2,101 +2,95 @@
 {% load static %}
 {% block content %}
 
-    <body>
+    <main class="container mx-auto px-4 py-8">
+        <div class="max-w-7xl mx-auto">
 
-    <main>
-        <div class="container">
-
-            <nav class="navbar navbar-expand-lg navbar-dark mt-3 mb-5 shadow p-2"
-                    style="background-color: #607d8b">
-
-                <div class="container-fluid">
-                    <a class="navbar-brand ml-5" href="#">Categories:</a>
+            <nav class="bg-gray-800 text-white p-4 rounded-lg shadow-md mb-8">
+                <div class="flex flex-col md:flex-row items-center justify-between">
+                    <a class="text-xl font-bold md:ml-5 mb-4 md:mb-0" href="#">Categories:</a>
 
                     <button
-                            class="navbar-toggler"
+                            class="md:hidden flex items-center px-3 py-2 border rounded text-gray-200 border-gray-400 hover:text-white hover:border-white"
                             type="button"
-                            data-mdb-toggle="collapse"
-                            data-mdb-target="#navbarSupportedContent2"
-                            aria-controls="navbarSupportedContent2"
-                            aria-expanded="false"
-                            aria-label="Toggle navigation">
+                            aria-label="Toggle navigation"
+                            id="navbarToggle"
+                    >
                         <i class="fas fa-bars"></i>
                     </button>
 
-
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent2">
-                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li class="nav-item active">
-                                <a class="nav-link text-white" href="#">All</a>
+                    <div class="w-full md:flex md:items-center md:w-auto" id="navbarSupportedContent2">
+                        <ul class="flex flex-col md:flex-row md:space-x-6 mb-4 md:mb-0 md:mr-auto">
+                            <li class="mb-2 md:mb-0">
+                                <a class="block md:inline-block text-white hover:text-gray-300 transition duration-200" href="{% url 'core:home' %}">All</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white" href="#">Shirts</a>
+                            <li class="mb-2 md:mb-0">
+                                <a class="block md:inline-block text-white hover:text-gray-300 transition duration-200" href="{% url 'core:home' %}?category=S">Shirts</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white" href="#">Sport wears</a>
+                            <li class="mb-2 md:mb-0">
+                                <a class="block md:inline-block text-white hover:text-gray-300 transition duration-200" href="{% url 'core:home' %}?category=SW">Sport wears</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white" href="#">Outwears</a>
+                            <li>
+                                <a class="block md:inline-block text-white hover:text-gray-300 transition duration-200" href="{% url 'core:home' %}?category=OW">Outwears</a>
                             </li>
                         </ul>
-                        <div class="col-8 ml-3 d-flex align-items-end justify-content-end">
-                        <form method="GET" action="." class="d-flex " role="search">
-                            <input
-                                    type="search"
-                                    name="q"
-                                    class="form-control rounded-2"
-                                    placeholder="Search"
-                                    value="{{ request.GET.q }}"
-                                    aria-label="Search"
-                            />
-                        </form></div>
+                        <div class="w-full md:w-auto md:ml-3 flex justify-end">
+                            <form method="GET" action="." class="flex w-full md:w-auto" role="search">
+                                <input
+                                        type="search"
+                                        name="q"
+                                        class="form-input rounded-md px-4 py-2 w-full md:w-64 text-gray-900 placeholder-gray-500 focus:ring-indigo-500 focus:border-indigo-500"
+                                        placeholder="Search"
+                                        value="{{ request.GET.q }}"
+                                        aria-label="Search"
+                                />
+                                {% if request.GET.category %}
+                                    <input type="hidden" name="category" value="{{ request.GET.category }}">
+                                {% endif %}
+                            </form>
+                        </div>
                     </div>
                 </div>
             </nav>
 
-            <section class="text-center mb-4">
-                <div class="row wow fadeIn">
+            <section class="text-center mb-8">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {% for item in object_list %}
+                        <div class="bg-white rounded-lg shadow-lg overflow-hidden h-[400px] flex flex-col">
+                            <div class="relative h-[300px] overflow-hidden flex items-center justify-center">
+                                <img
+                                        src="{{ item.image_url }}"
+                                        alt="{{ item.title }}"
+                                        class="w-auto h-full object-contain transition-transform duration-300 hover:scale-105"
+                                        onerror="this.onerror=null;this.src='https://placehold.co/400x300/e2e8f0/64748b?text=Image+Not+Found';"
+                                />
+                                <a href="{{ item.get_absolute_url }}">
+                                    <div class="absolute inset-0 bg-white opacity-0 hover:opacity-10 transition-opacity duration-300"></div>
+                                </a>
+                            </div>
 
-                        <div class="col-lg-3 col-md-6 mb-4">
-                            <div class="card" style="height: 400px">
-                                <div class="view overlay">
-                                    <img
-                                            src="{{ item.image_url }}"
-                                            style="height: 300px"
-                                            class="card-img-top"
-                                    />
-                                    <a href="{{ item.get_absolute_url }}">
-                                        <div class="mask rgba-white-slight"></div>
-                                    </a>
-                                </div>
+                            <div class="p-4 text-center flex-grow flex flex-col justify-between">
+                                <a href="{{ item.get_absolute_url }}" class="text-gray-600 text-sm font-semibold hover:underline mb-1">
+                                    {{ item.get_category_display }}
+                                </a>
 
-                                <div class="card-body text-center">
-                                    <a href="" class="grey-text">
-                                        <h5>{{ item.get_category_display }}</h5>
-                                    </a>
-
-                                    <h5>
-                                        <strong>
-                                            <a href="{{ item.get_absolute_url }}" class="text-dark">
-                                                {{ item.title }} {% if item.discount_price %}
-                                                <span class="badge rounded-pill bg-danger">SALE</span>
-                                            {% else %}
-                                                <span class="badge rounded-pill btn-primary">NEW</span>
-                                            {% endif %}
-                                            </a>
-                                        </strong>
-                                    </h5>
-
-                                    <h4 class="font-weight-bold text-primary">
+                                <h5 class="text-lg font-bold text-gray-800 mb-2">
+                                    <a href="{{ item.get_absolute_url }}" class="hover:text-indigo-600 transition duration-200">
+                                        {{ item.title }}
                                         {% if item.discount_price %}
-                                            <strong>${{ item.discount_price }} </strong>
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">SALE</span>
                                         {% else %}
-                                            <strong>${{ item.price }} </strong>
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 ml-2">NEW</span>
                                         {% endif %}
-                                    </h4>
-                                </div>
+                                    </a>
+                                </h5>
+
+                                <h4 class="font-bold text-indigo-600 text-xl">
+                                    {% if item.discount_price %}
+                                        <strong>${{ item.discount_price }} </strong>
+                                    {% else %}
+                                        <strong>${{ item.price }} </strong>
+                                    {% endif %}
+                                </h4>
                             </div>
                         </div>
                     {% endfor %}
@@ -104,14 +98,14 @@
             </section>
 
             {% if is_paginated %}
-                <nav class="d-flex justify-content-center wow fadeIn">
-                    <ul class="pagination pg-blue">
+                <nav class="flex justify-center mt-8" aria-label="Pagination">
+                    <ul class="flex items-center -space-x-px">
 
                         {% if page_obj.has_previous %}
-                            <li class="page-item">
+                            <li>
                                 <a
-                                        class="page-link"
-                                        href="?page={{ page_obj.previous_page_number }}"
+                                        class="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700"
+                                        href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}"
                                         aria-label="Previous"
                                 >
                                     <span aria-hidden="true">&laquo;</span>
@@ -122,21 +116,21 @@
 
                         {% for num in page_obj.paginator.page_range %}
                             {% if page_obj.number == num %}
-                                <li class="page-item active">
-                                    <a class="page-link" href="?page={{ num }}">{{ num }} <span class="sr-only">(current)</span></a>
+                                <li>
+                                    <a class="px-3 py-2 text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 font-bold" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" aria-current="page">{{ num }} <span class="sr-only">(current)</span></a>
                                 </li>
                             {% else %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                <li>
+                                    <a class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">{{ num }}</a>
                                 </li>
                             {% endif %}
                         {% endfor %}
 
                         {% if page_obj.has_next %}
-                            <li class="page-item">
+                            <li>
                                 <a
-                                        class="page-link"
-                                        href="?page={{ page_obj.next_page_number }}"
+                                        class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700"
+                                        href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}"
                                         aria-label="Next"
                                 >
                                     <span aria-hidden="true">&raquo;</span>

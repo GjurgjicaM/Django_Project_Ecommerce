@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     "django_countries",
     "core",
+    "crispy_tailwind"
 ]
 
 MIDDLEWARE = [
@@ -125,6 +126,10 @@ STRIPE_SECRET_KEY = 'sk_test_51Q5OhAHQu4NIJAfG78PGeoyabqce9vpdAqXTLZAhhk6oiNRWN6
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static_in_env")]
 
+CRISPY_ALLOWED_TEMPLATE_PACKS = ["tailwind"]
+CRISPY_TEMPLATE_PACK = "tailwind"
+
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -133,4 +138,3 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
-CRISPY_TEMPLATE_PACK = "bootstrap4"

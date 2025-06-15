@@ -4,23 +4,26 @@
 {% block head_title %}{% trans "Sign Out" %}{% endblock %}
 
 {% block content %}
-  <main>
-    <div class="container">
-      <section class="mb-4">
-        <div class="row wow fadeIn">
-          <div class='col-6 offset-3'>
-            <h1>{% trans "Sign Out" %}</h1>
-            <p>{% trans 'Are you sure you want to sign out?' %}</p>
-            <form method="post" action="{% url 'core:logout' %}">
-              {% csrf_token %}
-              {% if redirect_field_value %}
-              <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
-              {% endif %}
-              <button a href = "{% url 'core:logout' %}" class='btn btn-primary' type="submit">{% trans 'Sign Out' %}</button>
-            </form>
-          </div>
-        </div>
-      </section>
-    </div>
-  </main>
+<main class="flex flex-col items-center justify-center flex-grow px-4 py-16 font-sans">
+  <div class="w-full max-w-md bg-white rounded-2xl shadow-xl p-10">
+    <h1 class="text-3xl font-extrabold text-gray-800 text-center mb-4">
+      {% trans "Sign Out" %}
+    </h1>
+    <p class="text-center text-gray-600 mb-8 text-sm">
+      {% trans 'Are you sure you want to sign out?' %}
+    </p>
+    <form method="post" action="{% url 'core:logout' %}" class="space-y-6">
+      {% csrf_token %}
+      {% if redirect_field_value %}
+        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+      {% endif %}
+      <button
+        type="submit"
+        class="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold py-2.5 px-4 rounded-lg shadow-sm transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+      >
+        {% trans 'Sign Out' %}
+      </button>
+    </form>
+  </div>
+</main>
 {% endblock %}

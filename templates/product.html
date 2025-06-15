@@ -1,232 +1,68 @@
 {% extends "base.html" %}
 {% load cart_template_tags %}
-{% block content %} {% load static %}
+{% block content %}
+{% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <!-- Meta tags -->
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<main class="mt-8 mb-12">
+  <div class="container mx-auto px-4">
+    <div class="flex flex-col md:flex-row -mx-4">
+      <div class="md:w-1/2 px-4 mb-8 md:mb-0 flex items-center justify-center">
+        <img
+          src="{{object.image_url}}"
+          class="w-auto h-[590px] object-fit rounded-lg shadow-md"
+          alt="{{ object.title }}"
+        />
+      </div>
 
-    <!-- Bootstrap CSS -->
-    <link
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
+      <div class="md:w-1/2 px-4">
+        <div class="p-4 bg-white rounded-lg shadow-md">
+          <div class="mb-4">
+            <span class="inline-block bg-purple-600 text-white text-xs font-semibold px-3 py-1 rounded-full mr-2">
+              {{ object.get_category_display }}
+            </span>
+            {% if object.discount_price %}
+            <span class="inline-block bg-red-600 text-white text-xs font-semibold px-3 py-1 rounded-full">SALE</span>
+            {% else %}
+            <span class="inline-block bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full">NEW</span>
+            {% endif %}
+          </div>
 
-    <!-- MDB CSS -->
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.10.1/mdb.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-    />
-    <!-- Your Custom CSS -->
-    <link href="{% static 'styles.css' %}" rel="stylesheet" />
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    />
+          <p class="text-2xl font-bold text-gray-900 mb-4">
+            {% if object.discount_price %}
+            <span class="text-gray-500 line-through mr-2">${{ object.price }}</span>
+            <span class="text-green-600">${{ object.discount_price }}</span>
+            {% else %}
+            <span class="text-gray-900">${{ object.price }}</span>
+            {% endif %}
+          </p>
 
-    <title>Bootstrap</title>
-  </head>
-  <body>
-    <!-- Navbar -->
-    <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-white">
-      <!-- Container wrapper -->
-      <div class="container">
-        <!-- Toggle button -->
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-mdb-toggle="collapse"
-          data-mdb-target="#navbarSupportedContent1"
-          aria-controls="navbarSupportedContent1"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <i class="fas fa-bars"></i>
-        </button>
+          <h3 class="text-xl font-semibold text-gray-800 mb-2">Description</h3>
+          <p class="text-gray-700 mb-6">{{ object.description }}</p>
 
-        <!-- Collapsible wrapper -->
-        <div class="collapse navbar-collapse" id="navbarSupportedContent1">
-          <!-- Navbar brand -->
-          <a class="navbar-brand mt-2 mt-sm-0" href="{% url 'core:home' %}">
-            DJe-commerce
-          </a>
-          <!-- Left links -->
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item active">
-              <a class="nav-link" href="{% url 'core:home' %}">Home</a>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'core:checkout' %}">Checkout</a>
-            </li>
-        
-          </ul>
-          <!-- Left links -->
-        </div>
-        <!-- Collapsible wrapper -->
-
-        <!-- Right elements -->
-        <div class="d-flex align-items-center">
-          <!-- Icon -->
-          <a class="nav-link me-3" href="{% url 'core:order-summary' %}">
-            <i class="fas fa-shopping-cart">  </i>
-            <span class="badge rounded-pill badge-notification bg-danger"
-              >{{ request.user|cart_item_count }}</span
+          <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+            {% if object.is_in_cart %}
+            <a
+              href="{{ object.get_remove_from_cart_url }}"
+              class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline transition duration-150 ease-in-out text-center"
             >
-          </a>
-
-        
-
+              Remove from cart
+            </a>
+            {% else %}
+            <a
+              href="{{ object.get_add_to_cart_url }}"
+              class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline transition duration-150 ease-in-out text-center"
+            >
+              Add to cart
+              <i class="fas fa-shopping-cart ml-2"></i>
+            </a>
+            {% endif %}
+          </div>
         </div>
-
-        
-        <!-- Right elements -->
       </div>
-      <!-- Container wrapper -->
-    </nav>
-    <!-- Navbar -->
+    </div>
 
-    <br /><br />
-  </head>
-    <main class="mt-5 pt-4">
-      <div class="container dark-grey-text mt-5">
-        <!--Grid row-->
-        <div class="row wow fadeIn">
-          <!--Grid column-->
-          <div class="col-md-6 mb-4">
-            <img
-              src="{{item.image_url}}"
-              style="width: 400px; height: 400px"
-              class="img-fluid"
-              alt=""
-            />
-          </div>
-          <!--Grid column-->
 
-          <!--Grid column-->
-          <div class="col-md-6 mb-4">
-            <!--Content-->
-            <div class="p-4">
-              <div class="mb-3">
-                <a href="">
-                  <span class="badge purple mr-1"
-                    >{{ object.get_category_display }}</span
-                  >
-                </a>
-                <a href="">
-                  {% if object.discount_price %}
-                  <span class="badge bg-danger">SALE</span>
-                  {% else %}
-                  <span class="badge btn-primary">NEW</span> 
-                  {% endif %}
-                </a>
-              </div>
+  </div>
+</main>
 
-              <p class="lead">
-                {% if object.discount_price %}
-                <span class="mr-1">
-                  <del>${{ object.price }}</del>
-                </span>
-                <span>${{ object.discount_price }}</span>
-                {% else %}
-                <span>${{ object.price }}</span>
-                {% endif %}
-              </p>
-
-              <p class="lead font-weight-bold">Description</p>
-
-              <p>{{ object.description }}</p>
-
-              {% comment %} <form class="d-flex justify-content-left"> {% endcomment %}
-                {% comment %} <!-- Default input -->
-                <input
-                  type="number"
-                  value="1"
-                  aria-label="Search"
-                  class="form-control"
-                  style="width: 100px"
-                />
-                <button class="btn btn-primary btn-md my-0 p" type="submit">
-                  Add to cart
-                  <i class="fas fa-shopping-cart ml-1"></i>
-                </button>
-              </form> {% endcomment %}
-
-              <a
-                href="{{ object.get_add_to_cart_url }}"
-                class="btn btn-primary btn-md my-0 p"
-              >
-                Add to cart 
-                <i class="fas fa-shopping-cart ml-1"></i>
-              </a>
-              <a
-                href="{{ object.get_remove_from_cart_url }}"
-                class="btn btn-danger btn-md my-0 p"
-              >
-                Remove from cart
-              </a> 
-            </div>
-            <!--Content-->
-          </div>
-          <!--Grid column-->
-        </div>
-        <!--Grid row-->
-
-        <hr />
-
-        <!--Grid row-->
-        <div class="row d-flex justify-content-center wow fadeIn">
-          <!--Grid column-->
-          <div class="col-md-6 text-center">
-            <h4 class="my-4 h4">Additional information</h4>
-          </div>
-          <!--Grid column-->
-        </div>
-        <!--Grid row-->
-
-        <!--Grid row-->
-{#        <div class="row wow fadeIn">#}
-{#          <!--Grid column-->#}
-{#          <div class="col-lg-4 col-md-12 mb-4">#}
-{#            <img#}
-{#              src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Products/11.jpg"#}
-{#              class="img-fluid"#}
-{#              alt=""#}
-{#            />#}
-{#          </div>#}
-{#          <!--Grid column-->#}
-{##}
-{#          <!--Grid column-->#}
-{#          <div class="col-lg-4 col-md-6 mb-4">#}
-{#            <img#}
-{#              src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Products/12.jpg"#}
-{#              class="img-fluid"#}
-{#              alt=""#}
-{#            />#}
-{#          </div>#}
-{#          <!--Grid column-->#}
-{##}
-{#          <!--Grid column-->#}
-{#          <div class="col-lg-4 col-md-6 mb-4">#}
-{#            <img#}
-{#              src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Products/13.jpg"#}
-{#              class="img-fluid"#}
-{#              alt=""#}
-{#            />#}
-{#          </div>#}
-{#          <!--Grid column-->#}
-{#        </div>#}
-        <!--Grid row-->
-      </div>
-    </main>
-
-    {% endblock content %}
-  </body>
-</html>
+{% endblock content %}

@@ -1,88 +1,94 @@
 {% load cart_template_tags %} {% load static %}
-<style>
-  ul.navbar-nav {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
-  }
-</style>
+
 <nav
-  class="navbar fixed-top navbar-expand-lg navbar-light white scrolling-navbar"
+  class="top-0 left-0 right-0 z-50 bg-white shadow-md py-4 font-sans"
 >
-  <div class="container">
-    <a class="navbar-brand waves-effect" href="/">
-      <strong class="blue-text">E-commerce site</strong>
+  <div class="container mx-auto flex items-center justify-between px-4">
+    {# Brand/Logo #}
+    <a class="text-xl font-bold text-blue-600 hover:text-blue-800 transition duration-200" href="/">
+      E-commerce site
     </a>
 
-    <ul class="navbar-nav me-auto mb-2 mb-lg-0"> 
+    {# Primary Nav Links #}
+    {# The Checkout link will now only be visible when the user is authenticated #}
+    <ul class="hidden md:flex items-center space-x-6 ml-auto">
+      {% if request.user.is_authenticated %}
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'core:checkout' %}">Checkout</a>
+        <a class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md transition duration-200" href="{% url 'core:checkout' %}">Checkout</a>
       </li>
+      {% endif %}
     </ul>
+
+    {# Mobile Toggler Button #}
     <button
-      class="navbar-toggler"
+      class="md:hidden flex items-center px-3 py-2 border rounded text-gray-700 border-gray-300 hover:text-gray-900 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
       type="button"
-      data-toggle="collapse"
-      data-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent"
-      aria-expanded="false"
       aria-label="Toggle navigation"
+      id="navbarToggle" {# ID for JavaScript toggling #}
     >
-      <span class="navbar-toggler-icon"></span>
+      <i class="fas fa-bars"></i>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav mr-auto"></ul>
+    {# Collapsible Content (for mobile) #}
+    <div class="hidden md:flex md:items-center md:w-auto w-full" id="navbarContent">
+      {# This empty ul was originally for mr-auto, now handled by ml-auto on the other ul #}
+      <ul class="md:hidden flex flex-col items-center mt-4 space-y-2">
+        {% if request.user.is_authenticated %}
+        <li class="nav-item">
+          <a class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md transition duration-200" href="{% url 'core:checkout' %}">Checkout</a>
+        </li>
+        {% endif %}
+      </ul>
 
+      {# Authentication/Cart Section #}
       {% if request.user.is_authenticated %}
-      <div class="d-flex justify-content-center align-items-center">
-        <a class="nav-link me-3 position-relative" href="{% url 'core:order-summary' %}">
-          <i
-            class="fas fa-shopping-cart"
-            style="font-size: 17px; color: blue"
-          ></i>
+      <div class="flex items-center space-x-4 md:space-x-6 mt-4 md:mt-0 md:ml-auto">
+        <a class="relative text-gray-700 hover:text-gray-900 text-lg" href="{% url 'core:order-summary' %}">
+          <i class="fas fa-shopping-cart"></i>
           <span
-            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-            style="
-              font-size: 12px;
-              padding: 3px 5px;
-              transform: translate(-50%, -50%);
-            "
+            class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full transform translate-x-1/2 -translate-y-1/2"
           >
             {{ request.user|cart_item_count }}
           </span>
         </a>
+        <a
+          class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md transition duration-200"
+          href="{% url 'core:account_logout' %}"
+        >
+          Logout
+        </a>
       </div>
-      <ul class="navbar-nav nav-flex-icon">
-        <li class="nav-item">
-          <a
-            class="nav-link waves-effect"
-            href="{% url 'core:account_logout' %}"
-          >
-            <span class="clearfix d-none d-sm-inline-block"> Logout </span>
-          </a>
-        </li>
-      </ul>
       {% else %}
-      <ul class="navbar-nav nav-flex-icon">
-        <li class="nav-item">
-          <a
-            class="nav-link"
-            href="{% url 'core:account_login' %}"
-          >
-            <span class="clearfix d-none d-sm-inline-block"> Login </span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a
-            class="nav-link waves-effect"
-            href="{% url 'core:account_signup' %}"
-          >
-            <span class="clearfix d-none d-sm-inline-block"> Signup </span>
-          </a>
-        </li>
-      </ul>
+      <div class="flex items-center space-x-4 mt-4 md:mt-0 md:ml-auto">
+        <a
+          class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md transition duration-200"
+          href="{% url 'core:account_login' %}"
+        >
+          Login
+        </a>
+        <a
+          class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md transition duration-200"
+          href="{% url 'core:account_signup' %}"
+        >
+          Signup
+        </a>
+      </div>
       {% endif %}
     </div>
   </div>
 </nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const navbarToggle = document.getElementById('navbarToggle');
+        const navbarContent = document.getElementById('navbarContent');
+
+        if (navbarToggle && navbarContent) {
+            navbarToggle.addEventListener('click', function() {
+                navbarContent.classList.toggle('hidden');
+                navbarContent.classList.toggle('flex'); // Add flex to make it a flex container when visible
+                navbarContent.classList.toggle('flex-col'); // Make it column layout for mobile
+            });
+        }
+    });
+</script>

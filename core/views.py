@@ -1,7 +1,9 @@
 from django.contrib import messages
+from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import IntegrityError
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView, View
 from .models import *
@@ -272,13 +274,20 @@ class PaymentView(View):
 class HomeView(ListView):
     model = Item
     paginate_by = 4
+    ordering = ['-id']
     template_name = "home.html"
 
     def get_queryset(self):
         queryset = super().get_queryset()
         query = self.request.GET.get('q')
+        category = self.request.GET.get('category')  # Get category from URL parameters
+
         if query:
             queryset = queryset.filter(title__icontains=query)
+
+        if category:  # If a category is provided, filter by it
+            queryset = queryset.filter(category=category)  # Assuming 'category' field on Item model
+
         return queryset
 
 
@@ -298,6 +307,23 @@ class OrderSummaryView(LoginRequiredMixin, View):
 class ItemDetailView(DetailView):
     model = Item
     template_name = "product.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        item = self.get_object()
+        is_in_cart = False
+        if self.request.user.is_authenticated:
+            try:
+                # Get the user's current active order
+                user_order = Order.objects.get(user=self.request.user, ordered=False)
+                # Check if this specific item is one of the items in that order
+                if user_order.items.filter(item=item).exists():
+                    is_in_cart = True
+            except ObjectDoesNotExist:
+                # No active order for the user, so the item cannot be in their cart
+                is_in_cart = False
+        context['object'].is_in_cart = is_in_cart
+        return context
 
 
 @login_required
@@ -330,7 +356,6 @@ def add_to_cart(request, slug):
     else:
         return redirect("core:product", slug=slug)
 
-
 @login_required
 def remove_from_cart(request, slug):
     item = get_object_or_404(Item, slug=slug)
@@ -349,7 +374,9 @@ def remove_from_cart(request, slug):
                 order_item.save()
                 messages.info(request, f"Decreased the quantity of {item.title}")
             else:
+                # This is the crucial change: Delete the OrderItem object when quantity reaches 0
                 order.items.remove(order_item)
+                order_item.delete()
                 messages.info(
                     request, "This item was successfully removed from the cart"
                 )
@@ -359,7 +386,7 @@ def remove_from_cart(request, slug):
         messages.info(request, "You do not have an active order")
 
     referer_url = request.META.get('HTTP_REFERER')
-    if 'order-summary' in referer_url:
+    if referer_url and 'order-summary' in referer_url:
         return redirect("core:order-summary")
     else:
         return redirect("core:product", slug=slug)
@@ -404,7 +431,8 @@ def custom_login(request):
 
     form = LoginForm()
     context = {
-        'form': form
+        'form': form,
+        'signup_url': reverse('core:account_signup'),
     }
     return render(request, "accounts/login.html", context)
 
@@ -421,7 +449,35 @@ def custom_logout(request):
 
 
 def signup(request):
-    form = SignupForm()
+    if request.method == 'POST':
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            email = form.cleaned_data.get('email')
+            password = form.cleaned_data['password1']
+            password2 = form.cleaned_data['password2']
+
+            if password != password2:
+                messages.error(request, "Passwords do not match.")
+                return render(request, "accounts/signup.html", {'form': form})
+
+            try:
+                # Create the user manually as it's a forms.Form, not a ModelForm
+                user = User.objects.create_user(username=username, email=email, password=password)
+                messages.success(request, f"Account created for {user.username}! You can now log in.")
+                return redirect(reverse('core:account_login'))
+            except IntegrityError:
+                messages.error(request, "A user with that username already exists.")
+                return render(request, "accounts/signup.html", {'form': form})
+            except Exception as e:
+                messages.error(request, f"An unexpected error occurred during signup: {e}")
+                return render(request, "accounts/signup.html", {'form': form})
+        else:
+            # Form is not valid, errors are attached to the form and will be displayed by crispy forms
+            messages.error(request, "There was an error with your sign-up. Please correct the errors below.")
+    else:
+        form = SignupForm()
+
     context = {
         'form': form
     }

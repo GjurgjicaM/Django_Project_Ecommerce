@@ -1,67 +1,64 @@
 {% extends "base.html" %}
-{% load i18n %} 
-{% load account socialaccount %} 
+{% load i18n %}
+{% load account socialaccount %}
 {% load crispy_forms_tags %}
+{% load crispy_forms_filters %}
+
 {% block head_title %}
-{% trans "Sign In" %} {% endblock %} {% block content %}
-<main>
-  <div class="container">
-    <section class="mb-4">
-      <div class="row wow fadeIn">
-        <div class="col-6 offset-3">
-          <h1>{% trans "Log In" %}</h1>
+  {% trans "Sign In" %}
+{% endblock %}
 
-          {% get_providers as socialaccount_providers %} 
-          {% if socialaccount_providers %}
-          <p>
-            {% blocktrans with site.name as site_name %}Please log in with one
-            of your existing third party accounts. Or,
-            <a href="{{ signup_url }}">sign up</a> for a {{ site_name }} account
-            and log in below:{% endblocktrans %}
-          </p>
+{% block content %}
+<div class="flex flex-col justify-start px-6 py-12 lg:px-8  font-sans">
 
-          <div class="socialaccount_ballot">
-            <ul class="socialaccount_providers">
-              {% include "socialaccount/snippets/provider_list.html" with
-              process="login" %}
-            </ul>
+  <div class="sm:mx-auto sm:w-full sm:max-w-sm bg-white p-8 rounded-lg shadow-lg">
+    {% get_providers as socialaccount_providers %}
 
-            <div class="login-or">{% trans 'or' %}</div>
-          </div>
+    {% if socialaccount_providers %}
+      <p class="text-gray-600 mb-4 text-center text-sm">
+        {% blocktrans with site.name as site_name %}
+          Please log in with one of your existing third-party accounts. Or,
+          <a href="{{ signup_url }}" class="font-semibold text-indigo-600 hover:text-indigo-500">
+            sign up
+          </a>
+          for a {{ site_name }} account and log in below:
+        {% endblocktrans %}
+      </p>
 
-          {% include "socialaccount/snippets/login_extra.html" %}
-
-          {% else %}
-          <p>
-            {% blocktrans %}If you have not created an account yet, then please
-            <a href="{{ signup_url }}">sign up</a> first.{% endblocktrans %}
-          </p>
-          {% endif %}
-
-          <form
-            class="login"
-            method="POST"
-            action="{% url 'core:account_login' %}"
-          >
-            {% csrf_token %} {{ form|crispy }} {% if redirect_field_value %}
-            <input 
-              type="hidden"
-              name="{{ redirect_field_name }}"
-              value="{{ redirect_field_value }}"
-            />
-
-            {% endif %}
-            <a class="btn btn-default" href=""
-              >{% trans "Forgot Password?" %}</a
-            >
-            <button class="btn btn-primary" type="submit">
-              {% trans "Sign In" %}
-            </button>
-          </form>
-        </div>
+      <div class="socialaccount_ballot mb-6">
+        <ul class="socialaccount_providers flex flex-col space-y-2">
+          {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+        </ul>
+        <div class="text-center text-gray-500 my-4 text-sm">{% trans 'or' %}</div>
       </div>
-    </section>
-  </div>
-</main>
 
+      {% include "socialaccount/snippets/login_extra.html" %}
+
+    {% else %}
+      <p class="text-gray-600 mb-4 text-center text-sm">
+        {% blocktrans %}
+          If you have not created an account yet, then please
+          <a href="{{ signup_url }}" class="font-semibold text-indigo-600 hover:text-indigo-500">sign up</a>
+          first.
+        {% endblocktrans %}
+      </p>
+    {% endif %}
+
+    <form class="space-y-6" action="{% url 'core:account_login' %}" method="POST">
+      {% csrf_token %}
+      {{ form|crispy }}
+
+      {% if redirect_field_value %}
+        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+      {% endif %}
+
+      <div>
+        <button type="submit" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+          {% trans "Sign In" %}
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>
 {% endblock %}
