@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views import OrderHistoryView
 
 app_name = "core"
 
@@ -18,6 +19,8 @@ urlpatterns = [
     path("account-login/", views.custom_login, name="account_login"),
     path("account-logout/", views.logout, name="account_logout"),
     path("account-signup/", views.signup, name="account_signup"),
+    path('order-history/', OrderHistoryView.as_view(), name='order-history'), # New URL pattern
+
 # path("accounts/", include("allauth.urls")),
     path("logout/", views.custom_logout, name="logout"),
 ]

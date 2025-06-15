@@ -1,89 +1,90 @@
-{% extends "base.html" %} {% block content %}
-<main>
-  <div class="container">
-    <div class="table-responsive text-nowrap">
-      <h2>Order Summary</h2>
-      <table class="table" style="table-layout: fixed; width: 100%;">
+{% extends "base.html" %}
+{% block content %}
+<main class="min-h-screen py-8">
+  <div class="container mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center mb-8 text-gray-800">Order Summary</h2>
+    <div class="overflow-x-auto bg-white rounded-lg shadow-md mb-8">
+      <table class="min-w-full leading-normal">
         <thead>
-          <tr>
-            <th scope="col" style="width: 10%;">#</th>
-            <th scope="col">Item title</th>
-            <th scope="col">Price</th>
-            <th scope="col">Quantity</th>
-            <th scope="col">Total Item Price</th>
-            <th scope="col">Remove Item</th>
+          <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+            <th class="py-3 px-6 text-left w-1/12">#</th>
+            <th class="py-3 px-6 text-left">Item title</th>
+            <th class="py-3 px-6 text-left">Price</th>
+            <th class="py-3 px-6 text-left">Quantity</th>
+            <th class="py-3 px-6 text-left">Total Item Price</th>
+            <th class="py-3 px-6 text-left">Remove Item</th>
           </tr>
         </thead>
         <tbody>
           {% for order_item in object.items.all %}
-          <tr>
-            <th scope="row">{{forloop.counter}}</th>
-            <td>{{ order_item.item.title }}</td>
-            <td>
+          <tr class="border-b border-gray-200 hover:bg-gray-50 text-gray-700 text-sm">
+            <td class="py-3 px-6 text-left font-medium">{{forloop.counter}}</td>
+            <td class="py-3 px-6 text-left">{{ order_item.item.title }}</td>
+            <td class="py-3 px-6 text-left">
               {% if order_item.item.discount_price %}
-              <del>{{order_item.item.price}}</del>
-              ${{ order_item.item.discount_price }} {% else %}
-              ${{order_item.item.price }} {% endif %}
+              <del class="text-gray-500 mr-1">${{order_item.item.price}}</del>
+              <span class="font-semibold text-green-600">${{ order_item.item.discount_price }}</span>
+              {% else %}
+              <span class="font-semibold">${{order_item.item.price }}</span>
+              {% endif %}
             </td>
 
-            <td>
-                <a href="{% url 'core:remove-from-cart' order_item.item.slug %}"><i class="fas fa-minus mr-2" ></i></a> 
-                {{  order_item.quantity  }} 
-                <a href="{% url 'core:add-to-cart' order_item.item.slug  %}"><i class="fas fa-plus ml-2"></i></a>
+            <td class="py-3 px-6 text-left flex items-center">
+                <a href="{% url 'core:remove-from-cart' order_item.item.slug %}" class="text-blue-500 hover:text-blue-700 transition-colors duration-200 text-lg mx-1">
+                    <i class="fas fa-minus"></i>
+                </a>
+                <span class="mx-2 text-base font-semibold">{{  order_item.quantity  }}</span>
+                <a href="{% url 'core:add-to-cart' order_item.item.slug  %}" class="text-blue-500 hover:text-blue-700 transition-colors duration-200 text-lg mx-1">
+                    <i class="fas fa-plus"></i>
+                </a>
             </td>
 
-            <td>
+            <td class="py-3 px-6 text-left">
               {% if order_item.item.discount_price %}
-              ${{order_item.get_total_discount_item_price }}
-              <span class="badge badge-primary"
-                >Saving ${{ order_item.get_amount_saved }}</span
-              >
-              {% else %} ${{ order_item.get_total_item_price }} {% endif %}
+              <span class="font-semibold">${{order_item.get_total_discount_item_price }}</span>
+              <span class="ml-2 bg-blue-500 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
+                Saving ${{ order_item.get_amount_saved }}
+              </span>
+              {% else %} <span class="font-semibold">${{ order_item.get_total_item_price }}</span> {% endif %}
             </td>
-            <td><a style="color:red" href="{% url 'core:remove-all-from-cart' order_item.item.slug %}"><i class="fas fa-trash"></i></a></td>
-          </tr> 
+            <td class="py-3 px-6 text-left">
+              <a class="text-red-500 hover:text-red-700 transition-colors duration-200 text-lg" href="{% url 'core:remove-all-from-cart' order_item.item.slug %}">
+                <i class="fas fa-trash"></i>
+              </a>
+            </td>
+          </tr>
           {% empty %}
           <tr>
-            <td colspan="5"><b>Your cart is empty</b></td>
+            <td colspan="6" class="py-4 px-6 text-center text-gray-600 font-bold text-lg">Your cart is empty</td>
           </tr>
           <tr>
-            <td colspan="6">
-              <a
-                style="float: right; margin-right: 5px"
-                class="btn btn-primary"
-                href="/"
-                >Continue shopping</a
-              >
+            <td colspan="6" class="py-4 px-6 text-right">
+              <a class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-150 ease-in-out" href="/">
+                Continue shopping
+              </a>
             </td>
           </tr>
-          {% endfor %} 
-         
-   
+          {% endfor %}
+
           {% if object.items.count > 0 %}
           {% if object.coupon %}
-          <tr>
-            <td colspan="5"></td>
-            <td colspan="1"><b>COUPON: ${{ object.coupon.amount }}</b></td>
+          <tr class="border-b border-gray-200 text-gray-700 text-sm">
+            <td colspan="5" class="py-3 px-6 text-right font-semibold"></td>
+            <td colspan="1" class="py-3 px-6 text-left font-bold text-green-600">COUPON: -${{ object.coupon.amount }}</td>
           </tr>
           {% endif %}
-          <tr>
-            <td colspan="5"></td>
-            <td colspan="1"><b>TOTAL PRICE: ${{ object.get_total }}</b></td>
+          <tr class="text-gray-800 text-base">
+            <td colspan="5" class="py-3 px-6 text-right font-semibold"></td>
+            <td colspan="1" class="py-3 px-6 text-left font-bold text-xl">TOTAL PRICE: ${{ object.get_total }}</td>
           </tr>
           <tr>
-            <td colspan="6">
-              <a
-                style="float: right"
-                class="btn btn-warning"
-                href="{% url 'core:checkout' %}"
-                >Proceed to checkout</a
-              >
-              <a
-                style="float: right; margin-right: 5px"
-                class="btn btn-primary"
-                href="/"
-                >Continue shopping</a
-              >
+            <td colspan="6" class="py-4 px-6 text-right space-x-2">
+              <a class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-150 ease-in-out" href="{% url 'core:checkout' %}">
+                Proceed to checkout
+              </a>
+              <a class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-150 ease-in-out" href="/">
+                Continue shopping
+              </a>
             </td>
           </tr>
           {% endif %}
@@ -92,5 +93,4 @@
     </div>
   </div>
 </main>
-
 {% endblock content %}

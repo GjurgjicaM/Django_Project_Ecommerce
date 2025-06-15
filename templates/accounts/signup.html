@@ -1,28 +1,38 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load crispy_forms_tags %}
+{% load crispy_forms_filters %}
 
-{% block head_title %}{% trans "Signup" %}{% endblock %}
+{% block head_title %}{% trans "Sign Up" %}{% endblock %}
 
 {% block content %}
-  <main>
-    <div class="container">
-      <section class="mb-4">
-        <div class="row wow fadeIn">
-          <div class='col-6 offset-3'>
-            <h1>{% trans "Sign Up" %}</h1>
-            <p>{% block container %}Already have an account? Then please <a href="{% url 'core:account_login' %}">log in</a>.{% endblock container %}</p>
-            <form class="signup" id="signup_form" method="post" action="{% url 'core:account_signup' %}">
-              {% csrf_token %}
-              {{ form|crispy }}
-              {% if redirect_field_value %}
-              <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-              {% endif %}
-              <button class='btn btn-primary' type="submit">{% trans "Sign Up" %} &raquo;</button>
-            </form>
-          </div>
-        </div>
-      </section>
-    </div>
-  </main>
+<main class="flex flex-col justify-center flex-grow px-6 py-16 bg-gradient-to-br from-white to-blue-50 font-sans">
+  <div class="w-full max-w-md mx-auto bg-white p-10 rounded-2xl shadow-xl">
+    <h1 class="text-3xl font-extrabold text-gray-800 text-center mb-4">{% trans "Sign Up" %}</h1>
+    <p class="text-center text-gray-600 mb-6 text-sm">
+      {% block container %}
+        {% trans "Already have an account?" %} {% trans "Then please" %}
+        <a href="{% url 'core:account_login' %}" class="font-semibold text-indigo-600 hover:text-indigo-500">
+          {% trans "log in" %}
+        </a>.
+      {% endblock container %}
+    </p>
+
+    <form id="signup_form" method="post" action="{% url 'core:account_signup' %}" class="space-y-6">
+      {% csrf_token %}
+      {{ form|crispy }}
+
+      {% if redirect_field_value %}
+        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+      {% endif %}
+
+      <button
+        type="submit"
+        class="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold py-2.5 px-4 rounded-lg shadow-sm transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+      >
+        {% trans "Sign Up" %} &raquo;
+      </button>
+    </form>
+  </div>
+</main>
 {% endblock %}

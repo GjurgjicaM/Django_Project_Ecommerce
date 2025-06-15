@@ -1,144 +1,173 @@
-{% extends "base.html" %} {% load crispy_forms_tags %} {% block content %}
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
 
-<main style="margin-bottom: 50px">
-  <div class="container wow fadeIn">
-    <h2 class="my-5 h2 text-center">Checkout form</h2>
-    <div class="row">
-      <div class="col-md-8 mb-5" style="margin-bottom: 50px">
-        <div class="card" style="padding: 20px">
-          <form method="POST" class="card-body">
+{% block content %}
+
+<main class="mb-12"> {# Added Tailwind margin-bottom #}
+  <div class="container mx-auto px-4 py-8"> {# Center content, add padding #}
+    <h2 class="text-3xl font-bold text-center mb-8">Checkout form</h2> {# Styled heading #}
+    <div class="flex flex-col md:flex-row md:space-x-8"> {# Responsive layout for columns #}
+      {# Main form column #}
+      <div class="w-full md:w-2/3 mb-12"> {# Responsive width #}
+        <div class="bg-white p-6 rounded-lg shadow-md"> {# Card styling #}
+          <form method="POST" class="space-y-6"> {# Add spacing between form sections #}
             {% csrf_token %}
 
-            <div><h3>Shipping address</h3></div>
-            
-            <div class="hideable_shipping_form">
-              <div class="md-form mb-5">
-                <input type="text" placeholder='1234 Main St' id="shipping_address" name="shipping_address" class="form-control"></input>
-                <label for="shipping_address" class="">Address</label>
+            <div>
+              <h3 class="text-xl font-semibold mb-4">Shipping address</h3> {# Styled subheading #}
+            </div>
+
+            {# Shipping form fields #}
+            <div class="hideable_shipping_form space-y-4"> {# Added spacing #}
+              <div class="mb-4">
+                <label for="shipping_address" class="block text-gray-700 text-sm font-bold mb-2">Address</label>
+                <input type="text" placeholder='1234 Main St' id="shipping_address" name="shipping_address" class="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"></input>
               </div>
 
-              <div class="md-form mb-5">
-                <input type="text" placeholder="Apartment or suite" id="shipping_address2" name="shipping_address2" class="form-control"></input>
-                <label for="shipping_address2" class="">Address 2 (optional)</label>
+              <div class="mb-4">
+                <label for="shipping_address2" class="block text-gray-700 text-sm font-bold mb-2">Address 2 (optional)</label>
+                <input type="text" placeholder="Apartment or suite" id="shipping_address2" name="shipping_address2" class="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"></input>
               </div>
 
-              <div class="row">
-                <div class="col-lg-4 col-md-12 mb-4">
-                  <label for="shipping_country">Country</label>
-                  {{ form.shipping_country }}
-                  <div class="invalid-feedback">
+              <div class="flex flex-wrap -mx-2"> {# Responsive row for country/zip #}
+                <div class="w-full lg:w-1/2 px-2 mb-4"> {# Responsive width #}
+                  <label for="shipping_country" class="block text-gray-700 text-sm font-bold mb-2">Country</label>
+                  {{ form.shipping_country }} {# Crispy Forms will render this select #}
+                  <div class="hidden text-red-500 text-xs italic"> {# Tailwind equivalent for invalid-feedback #}
                     Please select a valid country.
                   </div>
                 </div>
 
-                <div class="col-lg-4 col-md-6 mb-4">
-                  <label for="shipping_zip">Zip</label>
-                  <input type="text" placeholder="Zip code" id="shipping_zip" name="shipping_zip" class="form-control"></input>
-                  <div class="invalid-feedback">Zip code required.
-                  </div>
+                <div class="w-full lg:w-1/2 px-2 mb-4"> {# Responsive width #}
+                  <label for="shipping_zip" class="block text-gray-700 text-sm font-bold mb-2">Zip</label>
+                  <input type="text" placeholder="Zip code" id="shipping_zip" name="shipping_zip" class="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"></input>
+                  <div class="hidden text-red-500 text-xs italic">Zip code required.</div> {# Tailwind equivalent for invalid-feedback #}
                 </div>
               </div>
 
-            <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" id="same_billing_address" name="same_billing_address"></input>
-                <label class="custom-control-label" for="same_billing_address">Billing address is the same as my shipping address</label>
+              {# Checkboxes #}
+              <div class="flex items-center mb-4">
+                <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded-md" id="same_billing_address" name="same_billing_address"></input>
+                <label class="ml-2 text-gray-700" for="same_billing_address">Billing address is the same as my shipping address</label>
               </div>
 
-              <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" id="set_default_shipping" name="set_default_shipping"></input>
-                <label class="custom-control-label" for="set_default_shipping">Save as default shipping address</label>
+              <div class="flex items-center mb-4">
+                <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded-md" id="set_default_shipping" name="set_default_shipping"></input>
+                <label class="ml-2 text-gray-700" for="set_default_shipping">Save as default shipping address</label>
               </div>
-
-            </div>  
+            </div>
 
             {% if default_shipping_address %}
-            <div class="custom-control custom-checkbox">
-              <input type="checkbox" class="custom-control-input" id="use_default_shipping" name="use_default_shipping"></input>
-              <label class="custom-control-label" for="use_default_shipping">Use default shipping address: {{default_shipping_address.street_address|truncatechars:10}}</label>
+            <div class="flex items-center mb-4">
+              <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded-md" id="use_default_shipping" name="use_default_shipping"></input>
+              <label class="ml-2 text-gray-700" for="use_default_shipping">Use default shipping address: {{default_shipping_address.street_address|truncatechars:10}}</label>
             </div>
             {% endif %}
-    
 
-          <div><h3>Billing address</h3></div>
-            
-          <div class="hideable_billing_form">
-            <div class="md-form mb-5">
-              <input type="text" placeholder='1234 Main St' id="billing_address" name="billing_address" class="form-control"></input>
-              <label for="billing_address" class="">Address</label>
+            <div>
+              <h3 class="text-xl font-semibold mb-4 pt-4">Billing address</h3> {# Styled subheading, added padding #}
             </div>
 
-            <div class="md-form mb-5">
-              <input type="text" placeholder="Apartment or suite" id="billing_address2" name="billing_address2" class="form-control"></input>
-              <label for="billing_address2" class="">Address 2 (optional)</label>
-            </div>
+            {# Billing form fields #}
+            <div class="hideable_billing_form space-y-4"> {# Added spacing #}
+              <div class="mb-4">
+                <label for="billing_address" class="block text-gray-700 text-sm font-bold mb-2">Address</label>
+                <input type="text" placeholder='1234 Main St' id="billing_address" name="billing_address" class="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"></input>
+              </div>
 
-            <div class="row">
-              <div class="col-lg-4 col-md-12 mb-4">
-                <label for="billing_country">Country</label>
-                {{ form.billing_country }}
-                <div class="invalid-feedback">
-                  Please select a valid country.
+              <div class="mb-4">
+                <label for="billing_address2" class="block text-gray-700 text-sm font-bold mb-2">Address 2 (optional)</label>
+                <input type="text" placeholder="Apartment or suite" id="billing_address2" name="billing_address2" class="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"></input>
+              </div>
+
+              <div class="flex flex-wrap -mx-2"> {# Responsive row for country/zip #}
+                <div class="w-full lg:w-1/2 px-2 mb-4"> {# Responsive width #}
+                  <label for="billing_country" class="block text-gray-700 text-sm font-bold mb-2">Country</label>
+                  {{ form.billing_country }} {# Crispy Forms will render this select #}
+                  <div class="hidden text-red-500 text-xs italic"> {# Tailwind equivalent for invalid-feedback #}
+                    Please select a valid country.
+                  </div>
+                </div>
+
+                <div class="w-full lg:w-1/2 px-2 mb-4"> {# Responsive width #}
+                  <label for="billing_zip" class="block text-gray-700 text-sm font-bold mb-2">Zip</label>
+                  <input type="text" placeholder="Zip code" id="billing_zip" name="billing_zip" class="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"></input>
+                  <div class="hidden text-red-500 text-xs italic">Zip code required.</div> {# Tailwind equivalent for invalid-feedback #}
                 </div>
               </div>
-
-              <div class="col-lg-4 col-md-6 mb-4">
-                <label for="billing_zip">Zip</label>
-                <input type="text" placeholder="Zip code" id="billing_zip" name="billing_zip" class="form-control"></input>
-                <div class="invalid-feedback">Zip code required.</div>
-              </div>
+              <hr class="border-t border-gray-300 my-6" /> {# Styled horizontal rule #}
             </div>
-            <hr>
-          </div>
 
-          <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" id="set_default_billing" name="set_default_billing"></input>
-            <label class="custom-control-label" for="set_default_billing">Save as default shipping address</label>
-          </div>
-        
-          {% if default_billing_address %}
-          <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" id="use_default_billing" name="use_default_billing"></input>
-            <label class="custom-control-label" for="use_default_billing">Use default shipping address: {{default_billing_address.street_address|truncatechars:10}}</label>
-          </div>
-          {% endif %}
-        </hr>
-<br>
-        <h3>Payment option</h3>
-            <div class="d-block my-3">
+            <div class="flex items-center mb-4">
+              <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded-md" id="set_default_billing" name="set_default_billing"></input>
+              <label class="ml-2 text-gray-700" for="set_default_billing">Save as default billing address</label>
+            </div>
+
+            {% if default_billing_address %}
+            <div class="flex items-center mb-4">
+              <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded-md" id="use_default_billing" name="use_default_billing"></input>
+              <label class="ml-2 text-gray-700" for="use_default_billing">Use default billing address: {{default_billing_address.street_address|truncatechars:10}}</label>
+            </div>
+            {% endif %}
+
+            <br>
+            <h3 class="text-xl font-semibold mb-4">Payment option</h3> {# Styled subheading #}
+            <div class="space-y-3"> {# Add spacing between radio options #}
               {% for value, name in form.fields.payment_option.choices %}
-              <div class="custom-control custom-radio">
+              <div class="flex items-center">
                 <input
                   id="{{ name }}"
                   name="payment_option"
                   value="{{ value }}"
                   type="radio"
-                  class="custom-control-input"
+                  class="form-radio h-5 w-5 text-blue-600"
                   required
                 />
-                <label class="custom-control-label" for="{{ name }}"
-                  >{{ name }}</label
-                >
-               
+                <label class="ml-2 text-gray-700" for="{{ name }}">
+                  {{ name }}
+                </label>
               </div>
               {% endfor %}
             </div>
 
-            <hr class="mb-4" />
-            <button class="btn btn-primary btn-lg btn-block" type="submit">
+            <hr class="border-t border-gray-300 my-6" /> {# Styled horizontal rule #}
+            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-150 ease-in-out" type="submit">
               Continue to checkout
             </button>
           </form>
         </div>
       </div>
 
-      <div class="col-md-4 mb-4">{% include "order_snippet.html" %}</div>
+      {# Order snippet column #}
+      <div class="w-full md:w-1/3 mb-4">
+        {% include "order_snippet.html" %}
+      </div>
     </div>
   </div>
 </main>
 
-{% endblock content %} 
+{% endblock content %}
 
 {% block extra_scripts %}
+{# Tailwind CSS CDN. Ensure this is loaded in your base.html or here if not. #}
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  // Ensure the forms module is loaded, if using default Tailwind forms
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Inter', 'sans-serif'],
+        },
+      },
+    },
+    plugins: [
+      require('@tailwindcss/forms'), // For styling form elements like checkboxes and radios
+    ],
+  };
+</script>
+
+{# Original JavaScript logic - kept as is per request #}
 <script>
   var hideable_shipping_form = $(".hideable_shipping_form");
   var hideable_billing_form = $(".hideable_billing_form");
@@ -166,4 +195,4 @@
     }
   });
 </script>
-{% endblock extra_scripts %} 
+{% endblock extra_scripts %}

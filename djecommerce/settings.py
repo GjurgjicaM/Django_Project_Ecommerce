@@ -24,6 +24,7 @@ ALLOWED_HOSTS = []
 
 
 INSTALLED_APPS = [
+    "jazzmin",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -38,6 +39,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     "django_countries",
     "core",
+    "crispy_tailwind"
 ]
 
 MIDDLEWARE = [
@@ -125,6 +127,10 @@ STRIPE_SECRET_KEY = 'sk_test_51Q5OhAHQu4NIJAfG78PGeoyabqce9vpdAqXTLZAhhk6oiNRWN6
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static_in_env")]
 
+CRISPY_ALLOWED_TEMPLATE_PACKS = ["tailwind"]
+CRISPY_TEMPLATE_PACK = "tailwind"
+
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -133,4 +139,58 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
-CRISPY_TEMPLATE_PACK = "bootstrap4"
+
+# settings.py
+
+JAZZMIN_SETTINGS = {
+    # Title of the admin site
+    "site_title": "My E-commerce Admin",
+
+    # Title of the dashboard when no title is set (i.e. 'Django Admin')
+    "site_header": "E-commerce Site",
+
+    # Welcome text on the dashboard
+    "welcome_sign": "Welcome to the E-commerce Admin!",
+
+    # Copyright on the footer
+    "copyright": "2025 E-commerce Site",
+
+    # Links to include in the sidebar (optional)
+    "sidebar_links": [
+        {
+            "name": "Home",
+            "url": "admin:index",
+            "icon": "fas fa-home",
+            "new_window": False
+        },
+        {"model": "auth.User"},
+        {"app": "core"}, # Link to your 'core' app models
+        # Add more custom links or app/model links here
+    ],
+
+    # Flat theme for minimal styling (optional)
+    "changeform_format": "horizontal_tabs", # or "vertical_tabs", "single_inline", "collapsible"
+}
+
+JAZZMIN_UI_TWEAKS = {
+    "navbar_small_text": False,
+    "footer_small_text": False,
+    "body_small_text": False,
+    "brand_small_text": False,
+    "brand_colour": "navbar-dark", # or a specific color like "bg-purple-600"
+    "accent": "accent-primary",
+    "navbar": "navbar-white navbar-light",
+    "no_navbar_border": False,
+    "navbar_fixed": False,
+    "layout_boxed": False,
+    "footer_fixed": False,
+    "sidebar_is_nav_small_text": False,
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": True,
+    "sidebar_nav_compact_style": False,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": False,
+    "theme": "flatly", # Choose a theme like 'flatly', 'cerulean', 'simplex', 'darkly', etc.
+    "dark_mode_listener": False,
+    "dark_mode_theme": "darkly",
+}
