@@ -20,13 +20,35 @@ import string
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
+class HomeView(ListView):
+    model = Item
+    paginate_by = 4
+    ordering = ['-id']
+    template_name = "home.html"
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        query = self.request.GET.get('q')
+        category = self.request.GET.get('category')  
+
+        if query:
+            queryset = queryset.filter(title__icontains=query)
+
+        if category:  
+            queryset = queryset.filter(category=category)  
+
+        return queryset
+
+
+# def products(request):
+#     context = {"items": Item.objects.all()}
+#     return render(request, "product.html", context)
+
+
+
 def create_ref_code():
     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=20))
 
-
-def products(request):
-    context = {"items": Item.objects.all()}
-    return render(request, "product.html", context)
 
 
 def is_valid_form(values):
@@ -270,25 +292,6 @@ class PaymentView(View):
             messages.warning(self.request, "A serious error occurred.")
             return redirect("/")
 
-
-class HomeView(ListView):
-    model = Item
-    paginate_by = 4
-    ordering = ['-id']
-    template_name = "home.html"
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        query = self.request.GET.get('q')
-        category = self.request.GET.get('category')  # Get category from URL parameters
-
-        if query:
-            queryset = queryset.filter(title__icontains=query)
-
-        if category:  # If a category is provided, filter by it
-            queryset = queryset.filter(category=category)  # Assuming 'category' field on Item model
-
-        return queryset
 
 
 class OrderSummaryView(LoginRequiredMixin, View):

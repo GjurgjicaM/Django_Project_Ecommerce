@@ -2,146 +2,139 @@
 {% load static %}
 {% block content %}
 
-    <main class="container mx-auto px-4 py-8">
-        <div class="max-w-7xl mx-auto">
+<main class="container mx-auto px-4 py-8">
+  <div class="max-w-7xl mx-auto">
 
-            <nav class="bg-gray-800 text-white p-4 rounded-lg shadow-md mb-8">
-                <div class="flex flex-col md:flex-row items-center justify-between">
-                    <a class="text-xl font-bold md:ml-5 mb-4 md:mb-0" href="#">Categories:</a>
+    <!-- ─────── CATEGORY NAV ─────── -->
+    <nav class="bg-gray-800 text-white p-4 rounded-lg shadow-md mb-8">
+      <div class="flex flex-col md:flex-row items-center justify-between">
+        <a class="text-xl font-bold md:ml-5 mb-4 md:mb-0" href="#">Categories:</a>
 
-                    <button
-                            class="md:hidden flex items-center px-3 py-2 border rounded text-gray-200 border-gray-400 hover:text-white hover:border-white"
-                            type="button"
-                            aria-label="Toggle navigation"
-                            id="navbarToggle"
-                    >
-                        <i class="fas fa-bars"></i>
-                    </button>
+        <!-- Hamburger (mobile) -->
+        <button id="catToggle"
+                class="md:hidden flex items-center px-3 py-2 border rounded text-gray-200 border-gray-400 hover:text-white hover:border-white"
+                aria-label="Toggle categories">
+          <i class="fas fa-bars"></i>
+        </button>
 
-                    <div class="w-full md:flex md:items-center md:w-auto" id="navbarSupportedContent2">
-                        <ul class="flex flex-col md:flex-row md:space-x-6 mb-4 md:mb-0 md:mr-auto">
-                            <li class="mb-2 md:mb-0">
-                                <a class="block md:inline-block text-white hover:text-gray-300 transition duration-200" href="{% url 'core:home' %}">All</a>
-                            </li>
-                            <li class="mb-2 md:mb-0">
-                                <a class="block md:inline-block text-white hover:text-gray-300 transition duration-200" href="{% url 'core:home' %}?category=S">Shirts</a>
-                            </li>
-                            <li class="mb-2 md:mb-0">
-                                <a class="block md:inline-block text-white hover:text-gray-300 transition duration-200" href="{% url 'core:home' %}?category=SW">Sport wears</a>
-                            </li>
-                            <li>
-                                <a class="block md:inline-block text-white hover:text-gray-300 transition duration-200" href="{% url 'core:home' %}?category=OW">Outwears</a>
-                            </li>
-                        </ul>
-                        <div class="w-full md:w-auto md:ml-3 flex justify-end">
-                            <form method="GET" action="." class="flex w-full md:w-auto" role="search">
-                                <input
-                                        type="search"
-                                        name="q"
-                                        class="form-input rounded-md px-4 py-2 w-full md:w-64 text-gray-900 placeholder-gray-500 focus:ring-indigo-500 focus:border-indigo-500"
-                                        placeholder="Search"
-                                        value="{{ request.GET.q }}"
-                                        aria-label="Search"
-                                />
-                                {% if request.GET.category %}
-                                    <input type="hidden" name="category" value="{{ request.GET.category }}">
-                                {% endif %}
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </nav>
+        <!-- Categories and Search -->
+        <div id="catMenu" class="hidden w-full md:flex md:items-center md:w-auto">
+          <ul class="flex flex-col md:flex-row md:space-x-6 mb-4 md:mb-0 md:mr-auto">
+            <li><a href="{% url 'core:home' %}" class="block md:inline-block text-white hover:text-gray-300">All</a></li>
+            <li><a href="{% url 'core:home' %}?category=S" class="block md:inline-block text-white hover:text-gray-300">Shirts</a></li>
+            <li><a href="{% url 'core:home' %}?category=SW" class="block md:inline-block text-white hover:text-gray-300">Sport wears</a></li>
+            <li><a href="{% url 'core:home' %}?category=OW" class="block md:inline-block text-white hover:text-gray-300">Outwears</a></li>
+          </ul>
 
-            <section class="text-center mb-8">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {% for item in object_list %}
-                        <div class="bg-white rounded-lg shadow-lg overflow-hidden h-[400px] flex flex-col">
-                            <div class="relative h-[300px] overflow-hidden flex items-center justify-center">
-                                <img
-                                        src="{{ item.image_url }}"
-                                        alt="{{ item.title }}"
-                                        class="w-auto h-full object-contain transition-transform duration-300 hover:scale-105"
-                                        onerror="this.onerror=null;this.src='https://placehold.co/400x300/e2e8f0/64748b?text=Image+Not+Found';"
-                                />
-                                <a href="{{ item.get_absolute_url }}">
-                                    <div class="absolute inset-0 bg-white opacity-0 hover:opacity-10 transition-opacity duration-300"></div>
-                                </a>
-                            </div>
-
-                            <div class="p-4 text-center flex-grow flex flex-col justify-between">
-                                <a href="{{ item.get_absolute_url }}" class="text-gray-600 text-sm font-semibold hover:underline mb-1">
-                                    {{ item.get_category_display }}
-                                </a>
-
-                                <h5 class="text-lg font-bold text-gray-800 mb-2">
-                                    <a href="{{ item.get_absolute_url }}" class="hover:text-indigo-600 transition duration-200">
-                                        {{ item.title }}
-                                        {% if item.discount_price %}
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-2">SALE</span>
-                                        {% else %}
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 ml-2">NEW</span>
-                                        {% endif %}
-                                    </a>
-                                </h5>
-
-                                <h4 class="font-bold text-indigo-600 text-xl">
-                                    {% if item.discount_price %}
-                                        <strong>${{ item.discount_price }} </strong>
-                                    {% else %}
-                                        <strong>${{ item.price }} </strong>
-                                    {% endif %}
-                                </h4>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            </section>
-
-            {% if is_paginated %}
-                <nav class="flex justify-center mt-8" aria-label="Pagination">
-                    <ul class="flex items-center -space-x-px">
-
-                        {% if page_obj.has_previous %}
-                            <li>
-                                <a
-                                        class="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700"
-                                        href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}"
-                                        aria-label="Previous"
-                                >
-                                    <span aria-hidden="true">&laquo;</span>
-                                    <span class="sr-only">Previous</span>
-                                </a>
-                            </li>
-                        {% endif %}
-
-                        {% for num in page_obj.paginator.page_range %}
-                            {% if page_obj.number == num %}
-                                <li>
-                                    <a class="px-3 py-2 text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 font-bold" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" aria-current="page">{{ num }} <span class="sr-only">(current)</span></a>
-                                </li>
-                            {% else %}
-                                <li>
-                                    <a class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">{{ num }}</a>
-                                </li>
-                            {% endif %}
-                        {% endfor %}
-
-                        {% if page_obj.has_next %}
-                            <li>
-                                <a
-                                        class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700"
-                                        href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}"
-                                        aria-label="Next"
-                                >
-                                    <span aria-hidden="true">&raquo;</span>
-                                    <span class="sr-only">Next</span>
-                                </a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </nav>
-            {% endif %}
+          <div class="w-full md:w-auto md:ml-3 flex justify-end">
+            <form method="GET" action="." class="flex w-full md:w-auto">
+              <input type="search" name="q"
+                     class="form-input rounded-md px-4 py-2 w-full md:w-64 text-gray-900 placeholder-gray-500 focus:ring-indigo-500 focus:border-indigo-500"
+                     placeholder="Search" value="{{ request.GET.q }}">
+              {% if request.GET.category %}
+                <input type="hidden" name="category" value="{{ request.GET.category }}">
+              {% endif %}
+            </form>
+          </div>
         </div>
-    </main>
+      </div>
+    </nav>
+
+    <!-- ─────── PRODUCTS ─────── -->
+    <section class="text-center mb-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {% for item in object_list %}
+          <div class="bg-white rounded-lg shadow-lg overflow-hidden h-[400px] flex flex-col">
+            <div class="relative h-[300px] flex items-center justify-center">
+              <img src="{{ item.image_url }}" alt="{{ item.title }}"
+                   class="w-auto h-full object-contain transition-transform duration-300 hover:scale-105"
+                   onerror="this.onerror=null;this.src='https://placehold.co/400x300/e2e8f0/64748b?text=Image+Not+Found';">
+              <a href="{{ item.get_absolute_url }}">
+                <div class="absolute inset-0 bg-white opacity-0 hover:opacity-10 transition-opacity duration-300"></div>
+              </a>
+            </div>
+            <div class="p-4 text-center flex-grow flex flex-col justify-between">
+              <a href="{{ item.get_absolute_url }}" class="text-gray-600 text-sm font-semibold hover:underline mb-1">
+                {{ item.get_category_display }}
+              </a>
+              <h5 class="text-lg font-bold text-gray-800 mb-2">
+                <a href="{{ item.get_absolute_url }}" class="hover:text-indigo-600 transition">
+                  {{ item.title }}
+                  {% if item.discount_price %}
+                    <span class="ml-2 px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">SALE</span>
+                  {% else %}
+                    <span class="ml-2 px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">NEW</span>
+                  {% endif %}
+                </a>
+              </h5>
+              <h4 class="font-bold text-indigo-600 text-xl">
+                {% if item.discount_price %}
+                  ${{ item.discount_price }}
+                {% else %}
+                  ${{ item.price }}
+                {% endif %}
+              </h4>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- ─────── PAGINATION ─────── -->
+    {% if is_paginated %}
+      <nav class="flex justify-center mt-8 mb-8" aria-label="Pagination">
+        <ul class="flex items-center space-x-1">
+
+          {% if page_obj.has_previous %}
+            <li>
+              <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}"
+                 class="px-3 py-2 text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700">
+                &laquo;
+              </a>
+            </li>
+          {% endif %}
+
+          {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+              <li>
+                <span class="px-3 py-2 text-blue-600 bg-blue-50 border border-blue-300 font-bold rounded">{{ num }}</span>
+              </li>
+            {% elif num > page_obj.number|add:-3 and num < page_obj.number|add:3 %}
+              <li>
+                <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}"
+                   class="px-3 py-2 text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700">{{ num }}</a>
+              </li>
+            {% endif %}
+          {% endfor %}
+
+          {% if page_obj.has_next %}
+            <li>
+              <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}"
+                 class="px-3 py-2 text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700">
+                &raquo;
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+    {% endif %}
+
+  </div>
+</main>
 
 {% endblock content %}
+
+{% block extra_scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const catToggle = document.getElementById('catToggle');
+    const catMenu = document.getElementById('catMenu');
+
+    if (catToggle && catMenu) {
+      catToggle.addEventListener('click', () => {
+        catMenu.classList.toggle('hidden');
+      });
+    }
+  });
+</script>
+{% endblock %}

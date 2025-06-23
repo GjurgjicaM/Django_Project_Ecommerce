@@ -1,98 +1,72 @@
-{% load cart_template_tags %} {% load static %}
+{% load cart_template_tags static %}
 
-<nav
-  class="top-0 left-0 right-0 z-50 bg-white shadow-md py-4 font-sans"
->
-  <div class="container mx-auto flex items-center justify-between px-4">
-    {# Brand/Logo #}
-    <a class="text-xl font-bold text-blue-600 hover:text-blue-800 transition duration-200" href="/">
+<nav class="bg-white shadow-md font-sans sticky top-0 z-50">
+  <div class="container mx-auto flex items-center justify-between px-4 py-4">
+
+    <a href="/" class="text-xl font-bold text-blue-600 hover:text-blue-800 transition">
       E-commerce site
     </a>
 
-    {# Primary Nav Links #}
-    {# The Checkout link will now only be visible when the user is authenticated #}
-    <ul class="hidden md:flex items-center space-x-6 ml-auto">
+    <ul class="hidden md:flex items-center space-x-6 ml-auto mr-4">
       {% if request.user.is_authenticated %}
-      <li class="nav-item">
-        <a class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md transition duration-200" href="{% url 'core:checkout' %}">Checkout</a>
-      </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'core:order-history' %}">Order History</a> {# New link #}
-        </li>
-          <li></li>
-        {% endif %}
-    </ul>
+        <li><a href="{% url 'core:checkout' %}" class="nav-link">Checkout</a></li>
+        <li><a href="{% url 'core:order-history' %}" class="nav-link">Order History</a></li>
+      {% endif %}
+</ul>
 
-    {# Mobile Toggler Button #}
-    <button
-      class="md:hidden flex items-center px-3 py-2 border rounded text-gray-700 border-gray-300 hover:text-gray-900 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-      type="button"
-      aria-label="Toggle navigation"
-      id="navbarToggle" {# ID for JavaScript toggling #}
-    >
-      <i class="fas fa-bars"></i>
-    </button>
+    <div class="flex items-center space-x-4">
 
-    {# Collapsible Content (for mobile) #}
-    <div class="hidden md:flex md:items-center md:w-auto w-full" id="navbarContent">
-      {# This empty ul was originally for mr-auto, now handled by ml-auto on the other ul #}
-      <ul class="md:hidden flex flex-col items-center mt-4 space-y-2">
-        {% if request.user.is_authenticated %}
-        <li class="nav-item">
-          <a class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md transition duration-200" href="{% url 'core:checkout' %}">Checkout</a>
-        </li>
-        {% endif %}
-      </ul>
-
-      {# Authentication/Cart Section #}
       {% if request.user.is_authenticated %}
-      <div class="flex items-center space-x-4 md:space-x-6 mt-4 md:mt-0 md:ml-auto">
-        <a class="relative text-gray-700 hover:text-gray-900 text-lg" href="{% url 'core:order-summary' %}">
+        <a href="{% url 'core:order-summary' %}" class="relative text-gray-700 hover:text-gray-900 text-lg">
           <i class="fas fa-shopping-cart"></i>
           <span
-            class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full transform translate-x-1/2 -translate-y-1/2"
-          >
+            class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
             {{ request.user|cart_item_count }}
           </span>
         </a>
-        <a
-          class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md transition duration-200"
-          href="{% url 'core:account_logout' %}"
-        >
-          Logout
-        </a>
-      </div>
+        
+        <a href="{% url 'core:account_logout' %}"
+           class="hidden md:inline-block nav-link">Logout</a>
       {% else %}
-      <div class="flex items-center space-x-4 mt-4 md:mt-0 md:ml-auto">
-        <a
-          class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md transition duration-200"
-          href="{% url 'core:account_login' %}"
-        >
-          Login
-        </a>
-        <a
-          class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md transition duration-200"
-          href="{% url 'core:account_signup' %}"
-        >
-          Signup
-        </a>
-      </div>
+        <a href="{% url 'core:account_login' %}" class="hidden md:inline-block nav-link">Login</a>
+        <a href="{% url 'core:account_signup' %}" class="hidden md:inline-block nav-link">Signup</a>
       {% endif %}
+
+      <button id="navbarToggle"
+              class="md:hidden p-2 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              aria-label="Toggle navigation">
+        <i class="fas fa-bars text-xl"></i>
+      </button>
     </div>
+  </div>
+
+  <div id="mobileMenu" class="hidden md:hidden border-t border-gray-200 bg-white">
+    <ul class="flex flex-col px-4 py-4 space-y-2">
+
+      {% if request.user.is_authenticated %}
+        <li><a href="{% url 'core:checkout' %}" class="nav-link">Checkout</a></li>
+        <li><a href="{% url 'core:order-history' %}" class="nav-link">Order History</a></li>
+        <li><a href="{% url 'core:account_logout' %}" class="nav-link">Logout</a></li>
+      {% else %}
+        <li><a href="{% url 'core:account_login' %}" class="nav-link">Login</a></li>
+        <li><a href="{% url 'core:account_signup' %}" class="nav-link">Signup</a></li>
+      {% endif %}
+    </ul>
   </div>
 </nav>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const navbarToggle = document.getElementById('navbarToggle');
-        const navbarContent = document.getElementById('navbarContent');
+<style>
+  .nav-link { @apply text-gray-700 hover:text-gray-900 px-3 py-2 rounded transition; }
+</style>
 
-        if (navbarToggle && navbarContent) {
-            navbarToggle.addEventListener('click', function() {
-                navbarContent.classList.toggle('hidden');
-                navbarContent.classList.toggle('flex'); // Add flex to make it a flex container when visible
-                navbarContent.classList.toggle('flex-col'); // Make it column layout for mobile
-            });
-        }
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn   = document.getElementById('navbarToggle');
+    const menu  = document.getElementById('mobileMenu');
+
+    btn.addEventListener('click', () => {
+      menu.classList.toggle('hidden');
+      menu.classList.toggle('animate-fade');
     });
+  });
 </script>
