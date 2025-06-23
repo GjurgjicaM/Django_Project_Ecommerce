@@ -12,7 +12,7 @@ Welcome to the Django E-commerce Project! This project is a full-featured e-comm
 ## Technologies
 
 - **Backend**: Django, Python
-- **Frontend**: HTML, CSS, JavaScript, Bootstrap
+- **Frontend**: HTML, CSS, JavaScript, Tailwind
 - **Database**: SQLite (configurable for other databases)
   
 ## Setup
