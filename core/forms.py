@@ -1,5 +1,6 @@
 from django import forms
 from django_countries.fields import CountryField
+from .models import SIZE_CHOICES
 from django_countries.widgets import CountrySelectWidget
 
 payment_options = [("stripe", "Stripe"), ("paypal", "PayPal")]
@@ -69,3 +70,6 @@ class RefundForm(forms.Form):
     ref_code = forms.CharField(max_length=20)
     message = forms.CharField(widget=forms.Textarea(attrs={"rows": "4"}))
     email = forms.EmailField()
+    
+class AddToCartForm(forms.Form):
+    size = forms.ChoiceField(choices=SIZE_CHOICES, widget=forms.Select(attrs={"class": "form-select"}))

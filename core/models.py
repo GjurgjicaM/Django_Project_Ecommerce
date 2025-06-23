@@ -5,6 +5,7 @@ from django_countries.fields import CountryField
 
 
 CATEGORY_CHOICES = (("S", "Shirt"), ("SW", "Sport wear"), ("OW", "Outwear"))
+SIZE_CHOICES = (("XS", "XS"), ("S", "S"), ("M", "M"), ("L", "L"), ("XL", "XL"))
 LABEL_CHOICES = (("P", "primary"), ("S", "secondary"), ("D", "danger"))
 ADDRESS_CHOICES = (("B", "billing"), ("S", "shipping"))
 
@@ -17,7 +18,8 @@ class Item(models.Model):
     label = models.CharField(choices=LABEL_CHOICES, max_length=1, default="P")
     slug = models.SlugField()
     image_url = models.CharField(max_length=2083, default=False)
-    description = models.TextField(default="") #models.ImageField()
+    description = models.TextField(default="") 
+    size = models.CharField(choices=SIZE_CHOICES, max_length=2, default="M")
 
     def __str__(self):
         return self.title
@@ -37,6 +39,8 @@ class OrderItem(models.Model):
     ordered = models.BooleanField(default=False)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
+    size = models.CharField(choices=SIZE_CHOICES, max_length=2, default="M")
+
 
     def __str__(self):
         return f"{self.quantity} of {self.item.title}"

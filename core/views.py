@@ -317,30 +317,58 @@ class ItemDetailView(DetailView):
         is_in_cart = False
         if self.request.user.is_authenticated:
             try:
-                # Get the user's current active order
                 user_order = Order.objects.get(user=self.request.user, ordered=False)
-                # Check if this specific item is one of the items in that order
                 if user_order.items.filter(item=item).exists():
                     is_in_cart = True
             except ObjectDoesNotExist:
-                # No active order for the user, so the item cannot be in their cart
                 is_in_cart = False
         context['object'].is_in_cart = is_in_cart
+        context["form"] = AddToCartForm()
         return context
 
 
 @login_required
 def add_to_cart(request, slug):
     item = get_object_or_404(Item, slug=slug)
+
+    if request.method == "POST":
+        # User is adding from product page with a form (size selected)
+        form = AddToCartForm(request.POST)
+        if form.is_valid():
+            selected_size = form.cleaned_data.get("size")
+        else:
+            messages.error(request, "Invalid form submission.")
+            return redirect("core:product", slug=slug)
+    else:
+        # User is adding from cart quantity increment button (GET)
+        # Find an existing order item for this user and product
+        order_item_qs = OrderItem.objects.filter(
+            item=item, user=request.user, ordered=False
+        )
+        if order_item_qs.exists():
+            # Just pick the first existing order item (with its size)
+            existing_order_item = order_item_qs.first()
+            selected_size = existing_order_item.size
+        else:
+            # No existing order item, fallback to default size or redirect with error
+            messages.error(request, "Please select a size to add this item.")
+            return redirect("core:product", slug=slug)
+
+    # Now get or create the order item with correct size
     order_item, created = OrderItem.objects.get_or_create(
-        item=item, user=request.user, ordered=False
+        item=item,
+        user=request.user,
+        ordered=False,
+        size=selected_size,
     )
+
     order_qs = Order.objects.filter(user=request.user, ordered=False)
 
     if order_qs.exists():
         order = order_qs[0]
 
-        if order.items.filter(item__slug=item.slug).exists():
+        # Check if order already contains this item with this size
+        if order.items.filter(item__slug=item.slug, size=selected_size).exists():
             order_item.quantity += 1
             order_item.save()
             messages.info(request, "This item quantity was updated")
@@ -353,11 +381,12 @@ def add_to_cart(request, slug):
         order.items.add(order_item)
         messages.info(request, "This item was successfully added to the cart")
 
-    referer_url = request.META.get('HTTP_REFERER')
+    referer_url = request.META.get('HTTP_REFERER', '/')
     if 'order-summary' in referer_url:
         return redirect("core:order-summary")
     else:
         return redirect("core:product", slug=slug)
+
 
 @login_required
 def remove_from_cart(request, slug):
@@ -377,7 +406,6 @@ def remove_from_cart(request, slug):
                 order_item.save()
                 messages.info(request, f"Decreased the quantity of {item.title}")
             else:
-                # This is the crucial change: Delete the OrderItem object when quantity reaches 0
                 order.items.remove(order_item)
                 order_item.delete()
                 messages.info(
@@ -409,7 +437,7 @@ def remove_all_from_cart(request, slug):
                 ordered=False
             )[0]
             order.items.remove(order_item)
-            order_item.delete()  # Remove the item completely from the cart
+            order_item.delete()  
             messages.info(request, "This item was removed from your cart.")
         else:
             messages.info(request, "This item was not in your cart.")
@@ -428,7 +456,7 @@ def custom_login(request):
             auth_login(request, user)
             messages.info(request, f"You have been logged in as {user.username}")
             print(request.user.is_authenticated)
-            return redirect('/')  # Redirect to home after login
+            return redirect('/') 
         else:
             messages.warning(request, 'Invalid username or password.')
 
@@ -465,7 +493,6 @@ def signup(request):
                 return render(request, "accounts/signup.html", {'form': form})
 
             try:
-                # Create the user manually as it's a forms.Form, not a ModelForm
                 user = User.objects.create_user(username=username, email=email, password=password)
                 messages.success(request, f"Account created for {user.username}! You can now log in.")
                 return redirect(reverse('core:account_login'))
@@ -476,7 +503,6 @@ def signup(request):
                 messages.error(request, f"An unexpected error occurred during signup: {e}")
                 return render(request, "accounts/signup.html", {'form': form})
         else:
-            # Form is not valid, errors are attached to the form and will be displayed by crispy forms
             messages.error(request, "There was an error with your sign-up. Please correct the errors below.")
     else:
         form = SignupForm()
@@ -551,10 +577,9 @@ class OrderHistoryView(LoginRequiredMixin, ListView):
     model = Order
     template_name = "order_history.html"
     context_object_name = "orders"
-    ordering = ['-ordered_date'] # Order by most recent first
-    paginate_by = 5 # Adjust as needed
+    ordering = ['-ordered_date'] 
+    paginate_by = 5 
 
     def get_queryset(self):
-        # Only show orders that are actually "ordered" (completed) for the current user
         return Order.objects.filter(user=self.request.user, ordered=True)
 

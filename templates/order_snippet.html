@@ -12,7 +12,6 @@
                 <h6 class="my-0 text-base font-medium text-gray-800">{{ order_item.quantity }} x {{ order_item.item.title}}</h6>
                 <small class="text-gray-500">{{ order_item.item.description}}</small>
             </div>
-            <span class="text-gray-700">${{ order_item.get_final_price }}</span>
         </li>
         {% endfor %}
 

@@ -48,13 +48,24 @@
               Remove from cart
             </a>
             {% else %}
-            <a
+            {% comment %} <a
               href="{{ object.get_add_to_cart_url }}"
               class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline transition duration-150 ease-in-out text-center"
             >
               Add to cart
               <i class="fas fa-shopping-cart ml-2"></i>
-            </a>
+            </a> {% endcomment %}
+            <form method="POST" action="{% url 'core:add-to-cart' object.slug %}" class="w-full">
+              {% csrf_token %}
+              <div class="mb-4">
+                <label for="id_size" class="block mb-1 font-semibold text-gray-700">Select Size</label>
+                {{ form.size }}
+              </div>
+              <button type="submit"
+                      class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
+                Add to cart <i class="fas fa-shopping-cart ml-2"></i>
+              </button>
+            </form>
             {% endif %}
           </div>
         </div>
