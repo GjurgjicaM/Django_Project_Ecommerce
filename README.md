@@ -19,8 +19,8 @@ Welcome to the Django E-commerce Project! This project is a full-featured e-comm
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/GjurgjicaM/Django_Project_Ecommerce.git
-   cd Django_Project_Ecommerce
+   git clone https://github.com/GjurgjicaM/django_project_e-commerce
+   cd django_project_e-commerce
 
 2. Install dependencies:
    ```bash
