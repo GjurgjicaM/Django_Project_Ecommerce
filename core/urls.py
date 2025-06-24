@@ -19,7 +19,9 @@ urlpatterns = [
     path("account-login/", views.custom_login, name="account_login"),
     path("account-logout/", views.logout, name="account_logout"),
     path("account-signup/", views.signup, name="account_signup"),
-    path('order-history/', OrderHistoryView.as_view(), name='order-history'), # New URL pattern
+    path('order-history/', OrderHistoryView.as_view(), name='order-history'),
+    path('activate/<uidb64>/<token>/', views.activate, name='activate'),
+    # New URL pattern
 
 # path("accounts/", include("allauth.urls")),
     path("logout/", views.custom_logout, name="logout"),

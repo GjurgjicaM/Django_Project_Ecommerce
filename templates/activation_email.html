@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Activate Your Account</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px; color: #333;">
+  <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+
+    <h2 style="color: #4CAF50;">Welcome, {{ user.username }}!</h2>
+
+    <p>Thanks for signing up. To complete your registration, please confirm your email address by clicking the button below:</p>
+
+    <p style="text-align: center;">
+      <a href="http://{{ domain }}/activate/{{ uid }}/{{ token }}/"
+         style="background-color: #4CAF50; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+        Activate Your Account
+      </a>
+    </p>
+
+    <p>If the button doesn't work, you can also copy and paste this URL into your browser:</p>
+    <p style="word-break: break-all;">http://{{ domain }}/activate/{{ uid }}/{{ token }}/</p>
+
+    <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+
+    <p style="font-size: 0.9em; color: #777;">If you did not create an account, no further action is required and you can safely ignore this email.</p>
+  </div>
+</body>
+</html>
