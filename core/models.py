@@ -4,7 +4,7 @@ from django.shortcuts import reverse
 from django_countries.fields import CountryField
 
 
-CATEGORY_CHOICES = (("S", "Shirt"), ("SW", "Sport wear"), ("OW", "Outwear"))
+CATEGORY_CHOICES = (("S", "Shirt"), ("SW", "Sport wear"), ("OW", "Outwear"), ("D", "Dress"), ("B", "Blazer"), ("Sk", "Skirt"), ("T", "Tops"))
 SIZE_CHOICES = (("XS", "XS"), ("S", "S"), ("M", "M"), ("L", "L"), ("XL", "XL"))
 LABEL_CHOICES = (("P", "primary"), ("S", "secondary"), ("D", "danger"))
 ADDRESS_CHOICES = (("B", "billing"), ("S", "shipping"))

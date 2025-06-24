@@ -525,9 +525,13 @@ def get_coupon(request, code):
 class AddCouponView(View):
     def post(self, *args, **kwargs):
         form = CouponForm(self.request.POST or None)
+        print("POST data:", self.request.POST)  # Debug
+        print("Is form valid?", form.is_valid())  # Debug
+
         if form.is_valid():
             try:
                 code = form.cleaned_data.get('code')
+                print("Coupon code:", code)
                 order = Order.objects.get(user=self.request.user, ordered=False)
                 order.coupon = get_coupon(self.request, code)
                 order.save()
@@ -536,6 +540,11 @@ class AddCouponView(View):
             except ObjectDoesNotExist:
                 messages.info(self.request, "You don't have an active order")
                 return redirect("core:checkout")
+        else:
+            print("Form errors:", form.errors)
+            messages.error(self.request, "Invalid coupon code")
+            return redirect("core:checkout")
+
 
 
 class RequestRefundView(View):

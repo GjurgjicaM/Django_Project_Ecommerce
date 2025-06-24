@@ -34,9 +34,7 @@
     <form class="bg-white p-4 rounded-lg shadow-md mt-4" action="{% url 'core:add-coupon' %}" method="POST">
         {% csrf_token %}
         <div class="flex">
-            {# Removed |as_crispy_field filter as it was causing the error #}
-            {# Apply Tailwind classes directly to the input field if couponform.code renders the input tag #}
-            <input type="text" name="{{ couponform.code.name }}" id="{{ couponform.code.id_for_label }}"
+            <input type="text" name="{{ coupon_form.code.name }}" id="{{ coupon_form.code.id_for_label }}"
                    value="{{ couponform.code.value|default_if_none:'' }}"
                    class="shadow appearance-none border rounded-l-lg w-full py-2 px-3 text-gray-700 leading-tight
                           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
