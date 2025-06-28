@@ -506,17 +506,43 @@ def signup(request):
             try:
                 user = User.objects.create_user(username=username, email=email, password=password)
                 user.is_active = False
+                user.save()
+
                 messages.success(request, f"Account created for {user.username}! Check your email to activate your account.")
+
                 current_site = get_current_site(request)
+                domain = current_site.domain
+                protocol = 'https' if request.is_secure() else 'http'
+
                 subject = 'Activate Your Account'
-                mail_content = render_to_string('activation_email.html', {
+
+                html_content = render_to_string('activation_email.html', {
                     'user': user,
-                    'domain': '127.0.0.1:8000',
+                    'domain': domain,
+                    'protocol': protocol,
                     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                     'token': default_token_generator.make_token(user),
                 })
-                send_mail(subject, mail_content, 'noreply@yourdomain.com', [email])
+
+                uid = urlsafe_base64_encode(force_bytes(user.pk))
+                if isinstance(uid, bytes):
+                    uid = uid.decode()
+
+                token = default_token_generator.make_token(user)
+
+                text_content = (
+                    f"Welcome, {user.username}!\n\n"
+                    f"Thanks for signing up. To complete your registration, please confirm your email address by visiting the following link:\n\n"
+                    f"{protocol}://{domain}/activate/{uid}/{token}/\n\n"
+                    f"If you did not create an account, no further action is required."
+                )
+
+                msg = EmailMultiAlternatives(subject, text_content, 'noreply@yourdomain.com', [email])
+                msg.attach_alternative(html_content, "text/html")
+                msg.send()
+
                 return redirect(reverse('core:account_login'))
+
             except IntegrityError:
                 messages.error(request, "A user with that username already exists.")
                 return render(request, "accounts/signup.html", {'form': form})
@@ -528,11 +554,7 @@ def signup(request):
     else:
         form = SignupForm()
 
-    context = {
-        'form': form
-    }
-    return render(request, "accounts/signup.html", context)
-
+    return render(request, "accounts/signup.html", {'form': form})
 
 
 def activate(request, uidb64, token):
@@ -545,9 +567,11 @@ def activate(request, uidb64, token):
     if user is not None and default_token_generator.check_token(user, token):
         user.is_active = True
         user.save()
-        return HttpResponse('Thank you for your email confirmation. You can now log in.')
+        messages.success(request, "Thank you for your email confirmation. You can now log in.")
+        return redirect('core:account_login')
     else:
-        return HttpResponse('Activation link is invalid!')
+        messages.error(request, "Activation link is invalid!")
+        return redirect('core:account_login')
 
 
 def get_coupon(request, code):
