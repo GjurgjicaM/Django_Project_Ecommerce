@@ -1,10 +1,15 @@
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import IntegrityError
 from django.shortcuts import render, get_object_or_404
+from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 from django.views.generic import ListView, DetailView, View
 from .models import *
 from django.shortcuts import redirect
@@ -12,6 +17,12 @@ from django.utils import timezone
 from .forms import *
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.conf import settings
+from django.core.mail import send_mail
+from django.utils.http import urlsafe_base64_decode
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.models import User
+from django.http import HttpResponse
+from django.core.mail import EmailMultiAlternatives
 
 import random
 import stripe
@@ -494,7 +505,17 @@ def signup(request):
 
             try:
                 user = User.objects.create_user(username=username, email=email, password=password)
-                messages.success(request, f"Account created for {user.username}! You can now log in.")
+                user.is_active = False
+                messages.success(request, f"Account created for {user.username}! Check your email to activate your account.")
+                current_site = get_current_site(request)
+                subject = 'Activate Your Account'
+                mail_content = render_to_string('activation_email.html', {
+                    'user': user,
+                    'domain': '127.0.0.1:8000',
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                    'token': default_token_generator.make_token(user),
+                })
+                send_mail(subject, mail_content, 'noreply@yourdomain.com', [email])
                 return redirect(reverse('core:account_login'))
             except IntegrityError:
                 messages.error(request, "A user with that username already exists.")
@@ -511,6 +532,22 @@ def signup(request):
         'form': form
     }
     return render(request, "accounts/signup.html", context)
+
+
+
+def activate(request, uidb64, token):
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        user.is_active = True
+        user.save()
+        return HttpResponse('Thank you for your email confirmation. You can now log in.')
+    else:
+        return HttpResponse('Activation link is invalid!')
 
 
 def get_coupon(request, code):
