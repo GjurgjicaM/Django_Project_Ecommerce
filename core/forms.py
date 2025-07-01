@@ -3,7 +3,7 @@ from django_countries.fields import CountryField
 from .models import SIZE_CHOICES
 from django_countries.widgets import CountrySelectWidget
 
-payment_options = [("stripe", "Stripe"), ("paypal", "PayPal")]
+payment_options = [("stripe", "Stripe"), ("cash", "Cash on delivery")]
 
 
 class LoginForm(forms.Form):
