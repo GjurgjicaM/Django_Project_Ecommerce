@@ -113,7 +113,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-SITE_ID = 1
+SITE_ID = 2
 LOGIN_URL = 'core:account_login'
 LOGOUT_URL = 'core:custom_logout'
 LOGIN_REDIRECT_URL = '/'
